@@ -48,7 +48,7 @@ class LoginPage extends StatelessWidget {
                 SizedBox(height: 30.0),
                 _crearPassword(bloc),
                 SizedBox(height: 30.0),
-                _crearBoton(),
+                _crearBoton(bloc),
               ],
             ),
           ),
@@ -131,6 +131,7 @@ class LoginPage extends StatelessWidget {
               hintText: 'ejemplo@correo.com',
               labelText: 'Correo electrónico',
               counterText: snapshot.data,
+              errorText: snapshot.error,
             ),
             onChanged: loginBloc.changeEmail,
           ),
@@ -151,6 +152,7 @@ class LoginPage extends StatelessWidget {
               icon: Icon(Icons.lock_outline, color: Colors.deepPurple),
               labelText: 'Contraseña',
               counterText: snapshot.data,
+              errorText: snapshot.error,
             ),
             onChanged: loginBloc.changePassword,
           ),
@@ -159,20 +161,33 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Widget _crearBoton() {
-    return RaisedButton(
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
-        child: Text(
-          'Ingresar',
-          style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w600),
-        ),
-      ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-      elevation: 0.0,
-      color: Colors.deepPurple,
-      textColor: Colors.white,
-      onPressed: () {},
+  Widget _crearBoton(LoginBloc loginBloc) {
+    return StreamBuilder(
+      stream: loginBloc.formValidStream,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        return RaisedButton(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
+            child: Text(
+              'Ingresar',
+              style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w600),
+            ),
+          ),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+          elevation: 0.0,
+          color: Colors.deepPurple,
+          textColor: Colors.white,
+          onPressed: snapshot.hasData ? () => _login(context, loginBloc) : null,
+        );
+      },
     );
+  }
+
+  _login(BuildContext context, LoginBloc loginBloc) {
+    print('Email:  ${loginBloc.email}');
+    print('Password: ${loginBloc.paswword}');
+
+    Navigator.pushReplacementNamed(context, 'home');
   }
 }
